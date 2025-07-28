@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        
+        .form-container {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: #fafafa;
+        }
+        
+        .form-container h2 {
+            color: #007bff;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input[type="text"], input[type="password"], input[type="file"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        input[type="file"] {
+            padding: 8px;
+        }
+        
+        select {
+            height: 40px;
+        }
+        
+        .checkbox-group {
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #e9f4ff;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .checkbox-group label {
+            display: inline;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .export-btn {
+            background-color: #28a745;
+        }
+        
+        .export-btn:hover {
+            background-color: #218838;
+        }
+        
+        .import-btn {
+            background-color: #17a2b8;
+        }
+        
+        .import-btn:hover {
+            background-color: #138496;
+        }
+        
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/side-bar}"></div> 
+    <div class="container">
+        <h1> Import Oracle DMP</h1>
+        
+        <div th:if="${message}" class="success">
+            <strong>✅ Succès :</strong>
+            <p th:text="${message}"></p>
+        </div>
+        
+        <div th:if="${error}" class="error">
+            <strong>❌ Erreur :</strong>
+            <p th:text="${error}"></p>
+        </div>
+        
+        <div class="form-container">
+            <h2> Importer un fichier DMP</h2>
+            <form method="post" action="/import" enctype="multipart/form-data" id="importForm">
+                <div class="form-group">
+                    <label for="dmpFile">Fichier DMP à importer :</label>
+                    <input type="file" id="dmpFile" name="dmpFile" accept=".dmp" required>
+                    <small>Seuls les fichiers .dmp sont acceptés (max 500MB)</small>
+                </div>
+                
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="createUser" name="createUser" value="true" onchange="toggleUserSelection()">
+                    <label for="createUser">
+                        <strong>👤 Créer un nouvel utilisateur Oracle</strong>
+                    </label>
+                    <div class="warning" style="margin-top: 10px;">
+                         <strong>Attention :</strong> Si cette option est cochée, un nouvel utilisateur sera créé avec des privilèges DBA.
+                        Sinon, l'utilisateur doit déjà exister dans la base de données.
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    
+                    <div class="form-group" id="existingUserGroup">
+                        <label for="importUsername">Utilisateur Oracle de destination :</label>
+                        <select id="importUsername" name="username" required>
+                            <option value="">-- Sélectionnez un utilisateur --</option>
+                            <option th:each="user : ${users}" th:value="${user}" th:text="${user}"></option>
+                        </select>
+                    </div>
+                    
+                    
+                    <div class="form-group hidden" id="newUserGroup">
+                        <label for="newUsername">Nom du nouvel utilisateur :</label>
+                        <input type="text" id="newUsername" name="username" 
+                               placeholder="Nom d'utilisateur à créer" 
+                               pattern="[A-Za-z][A-Za-z0-9_]{0,29}"
+                               title="Le nom d'utilisateur doit commencer par une lettre et contenir uniquement des lettres, chiffres et underscores (max 30 caractères)">
+                        <small>Le nom doit commencer par une lettre (max 30 caractères)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="importPassword">Mot de passe :</label>
+                        <input type="password" id="importPassword" name="password" 
+                               placeholder="Mot de passe Oracle" required
+                               minlength="6">
+                        <small>Minimum 6 caractères</small>
+                    </div>
+                </div>
+                
+                <button type="submit" class="import-btn">
+                    Importer
+                </button>
+            </form>
+        </div>
+
+        
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>Opération en cours, veuillez patienter...</p>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer}"></div> 
+    
+    <script>
+        function toggleUserSelection() {
+            const createUserCheckbox = document.getElementById('createUser');
+            const existingUserGroup = document.getElementById('existingUserGroup');
+            const newUserGroup = document.getElementById('newUserGroup');
+            const existingUserSelect = document.getElementById('importUsername');
+            const newUserInput = document.getElementById('newUsername');
+            
+            if (createUserCheckbox.checked) {
+                existingUserGroup.classList.add('hidden');
+                newUserGroup.classList.remove('hidden');
+                
+                existingUserSelect.removeAttribute('required');
+                newUserInput.setAttribute('required', 'required');
+                
+                existingUserSelect.value = '';
+            } else {
+                newUserGroup.classList.add('hidden');
+                existingUserGroup.classList.remove('hidden');
+                
+                newUserInput.removeAttribute('required');
+                existingUserSelect.setAttribute('required', 'required');
+                
+                newUserInput.value = '';
+            }
+        }
+        
+        document.getElementById('newUsername').addEventListener('input', function() {
+            const value = this.value.toUpperCase();
+            this.value = value;
+            
+            if (value && !/^[A-Z]/.test(value)) {
+                this.setCustomValidity('Le nom d\'utilisateur doit commencer par une lettre');
+            } else if (value && !/^[A-Z][A-Z0-9_]*$/.test(value)) {
+                this.setCustomValidity('Le nom d\'utilisateur ne peut contenir que des lettres, chiffres et underscores');
+            } else if (value && value.length > 30) {
+                this.setCustomValidity('Le nom d\'utilisateur ne peut pas dépasser 30 caractères');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        document.getElementById('importForm').addEventListener('submit', function(e) {
+            const createUserCheckbox = document.getElementById('createUser');
+            const newUserInput = document.getElementById('newUsername');
+            const existingUserSelect = document.getElementById('importUsername');
+            
+            if (createUserCheckbox.checked) {
+                if (!newUserInput.value.trim()) {
+                    alert('Veuillez saisir un nom d\'utilisateur à créer');
+                    e.preventDefault();
+                    return;
+                }
+                existingUserSelect.name = '';
+                newUserInput.name = 'username';
+            } else {
+                if (!existingUserSelect.value) {
+                    alert('Veuillez sélectionner un utilisateur existant');
+                    e.preventDefault();
+                    return;
+                }
+                newUserInput.name = '';
+                existingUserSelect.name = 'username';
+            }
+            
+            showLoading();
+        });
+        
+        function showLoading() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => button.disabled = true);
+        }
+        
+        document.getElementById('dmpFile').addEventListener('change', function() {
+            const file = this.files[0];
+            if (file && file.size > 500 * 1024 * 1024) {
+                alert('Le fichier sélectionné est trop volumineux. Taille maximale : 500MB');
+                this.value = '';
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstInput = document.querySelector('input[type="text"]');
+            if (firstInput) {
+                firstInput.focus();
+            }
+            
+            toggleUserSelection();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outil DBA</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Outil DBA</h2>
+                <div class="sidebar-toggle" id="sidebar-toggle">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3>DMP</h3>
+                    <a href="/exportL" class="nav-item">
+                        <span>Export</span>
+                    </a>
+                    <a href="/importL" class="nav-item">
+                        <span>Import</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
